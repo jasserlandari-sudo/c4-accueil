@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>C4 Accueil</title>
+<style>
+:root{--tx:#f3f6ff;--mut:#9fb0e0}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(70% 60% at 22% 85%,rgba(60,120,255,.35),transparent 70%),radial-gradient(60% 50% at 85% 10%,rgba(90,70,255,.25),transparent 70%),linear-gradient(160deg,#0c1a4d,#060b26 75%);padding:2.2vh 2vw}
+#app{height:100%;display:grid;grid-template-columns:1.05fr 1fr;gap:2.4vw}
+#left{display:flex;flex-direction:column;min-height:0;min-width:0}
+#clock{font-size:clamp(56px,15vh,150px);font-weight:300;line-height:1;letter-spacing:-.03em;font-variant-numeric:tabular-nums}
+#date{font-size:clamp(15px,3vh,26px);color:var(--mut);margin-top:.8vh;text-transform:capitalize}
+#car{flex:1;min-height:0;display:grid;align-items:center}
+#car svg{width:100%;height:auto;max-height:100%;overflow:visible;animation:roll .9s cubic-bezier(.2,.8,.2,1) both}
+@keyframes roll{from{opacity:0;transform:translateX(-8%)}to{opacity:1;transform:none}}
+#name{font-size:clamp(18px,3.4vh,30px);font-weight:600}
+#name small{display:block;font-weight:400;font-size:.62em;color:var(--mut);margin-top:2px}
+#grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:1.8vh 1.4vw;min-height:0}
+.app{display:flex;align-items:center;gap:1.3vw;text-align:left;padding:0 1.4vw;color:var(--tx);font:inherit;border:1px solid rgba(255,255,255,.14);border-radius:26px;background:linear-gradient(160deg,rgba(255,255,255,.14),rgba(255,255,255,.05));box-shadow:inset 0 1px 0 rgba(255,255,255,.18),0 10px 30px rgba(0,0,0,.28);transition:transform .12s,background .12s;min-width:0}
+.app:active{transform:scale(.97);background:linear-gradient(160deg,rgba(255,255,255,.24),rgba(255,255,255,.1))}
+.app:focus-visible{outline:3px solid #fff}
+.ico{flex:none;width:clamp(52px,12vh,92px);height:clamp(52px,12vh,92px);border-radius:24%;display:grid;place-items:center;box-shadow:inset 0 2px 0 rgba(255,255,255,.35),0 8px 20px rgba(0,0,0,.35)}
+.ico svg{width:52%;height:52%;fill:none;stroke:#fff;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.app b{display:block;font-size:clamp(16px,3.2vh,28px);font-weight:600}
+.app span{font-size:clamp(12px,2.2vh,18px);color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:3vh;transform:translateX(-50%);background:rgba(0,0,0,.78);padding:10px 18px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+@media (max-aspect-ratio:1/1){body{overflow:auto}#app{grid-template-columns:1fr;height:auto}#grid{grid-auto-rows:96px}#car{height:220px;flex:none}}
+@media (prefers-reduced-motion:reduce){#car svg{animation:none}.app,#toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+ <section id="left">
+  <div id="clock">--:--</div>
+  <div id="date"></div>
+  <div id="car">
+   <svg viewBox="0 0 620 250" role="img" aria-label="Citroën C4 phase 1">
+    <defs>
+     <linearGradient id="body" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4f7ff"/><stop offset=".45" stop-color="#b7c5ea"/><stop offset="1" stop-color="#5d6fa8"/></linearGradient>
+     <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b2a5e"/><stop offset=".6" stop-color="#3e5aa8"/><stop offset="1" stop-color="#1a2757"/></linearGradient>
+     <radialGradient id="shadow"><stop offset="0" stop-color="#000" stop-opacity=".55"/><stop offset="1" stop-color="#000" stop-opacity="0"/></radialGradient>
+     <radialGradient id="glow"><stop offset="0" stop-color="#4f8bff" stop-opacity=".55"/><stop offset="1" stop-color="#4f8bff" stop-opacity="0"/></radialGradient>
+     <linearGradient id="rim" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#f1f4fb"/><stop offset="1" stop-color="#7d89ad"/></linearGradient>
+    </defs>
+    <ellipse cx="310" cy="222" rx="300" ry="26" fill="url(#glow)"/>
+    <ellipse cx="310" cy="218" rx="270" ry="11" fill="url(#shadow)"/>
+    <path d="M42 172 C34 158 34 140 40 126 C62 98 104 68 152 56 C204 44 300 40 352 48 C392 56 422 82 450 100 L540 114 C568 122 580 142 578 160 L574 174 Z" fill="url(#body)" stroke="rgba(255,255,255,.7)" stroke-width="1.5"/>
+    <path d="M152 94 C162 74 192 62 232 58 L346 58 C374 64 394 80 420 98 Z" fill="url(#glass)" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>
+    <path d="M292 57 L292 96" stroke="rgba(255,255,255,.55)" stroke-width="3"/>
+    <path d="M60 120 C200 112 400 112 540 116" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.4"/>
+    <path d="M44 172 L574 174" stroke="rgba(30,45,100,.6)" stroke-width="5"/>
+    <rect x="260" y="108" width="26" height="5" rx="2.5" fill="rgba(40,55,110,.7)"/>
+    <rect x="370" y="108" width="26" height="5" rx="2.5" fill="rgba(40,55,110,.7)"/>
+    <path d="M40 128 L52 126 L50 150 L38 148 Z" fill="#ff4a4a"/>
+    <path d="M546 120 L572 128 C576 134 574 142 570 144 L548 140 Z" fill="#fff8d6"/>
+    <path d="M556 150 L574 152 L573 160 L556 158 Z" fill="rgba(40,55,110,.55)"/>
+    <g id="w1"><circle cx="150" cy="178" r="46" fill="#08102f"/><circle cx="150" cy="178" r="37" fill="#111827" stroke="#05081a" stroke-width="3"/><circle cx="150" cy="178" r="24" fill="url(#rim)"/><g stroke="#56628a" stroke-width="3"><path d="M150 156V200M128 178H172M134 162L166 194M166 162L134 194"/></g><circle cx="150" cy="178" r="5" fill="#2a3355"/></g>
+    <g id="w2"><circle cx="470" cy="178" r="46" fill="#08102f"/><circle cx="470" cy="178" r="37" fill="#111827" stroke="#05081a" stroke-width="3"/><circle cx="470" cy="178" r="24" fill="url(#rim)"/><g stroke="#56628a" stroke-width="3"><path d="M470 156V200M448 178H492M454 162L486 194M486 162L454 194"/></g><circle cx="470" cy="178" r="5" fill="#2a3355"/></g>
+   </svg>
+  </div>
+  <div id="name">Citroën C4<small>Phase 1</small></div>
+ </section>
+ <section id="grid"></section>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+// ====== À MODIFIER : vos applications ======
+// pkg = nom de package Android, url = lien (tel:, geo:, https:…). pkg vide = « À configurer ».
+const P = {
+ nav:'<path d="M12 3 19 20l-7-4-7 4z"/>',
+ mus:'<path d="M9 18V5l11-2v13"/><circle cx="6.5" cy="18" r="2.5"/><circle cx="17.5" cy="16" r="2.5"/>',
+ tel:'<path d="M22 16.9v3a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L8.1 9.9a16 16 0 0 0 6 6l1.3-1.3a2 2 0 0 1 2.1-.4c.9.3 1.8.6 2.8.7a2 2 0 0 1 1.7 2z"/>',
+ rad:'<rect x="3" y="9" width="18" height="11" rx="2.5"/><path d="M7 9 17 4M6.5 13.5H10M6.5 16.5H10"/><circle cx="16" cy="15" r="2.6"/>',
+ car:'<path d="m4 15 1.8-5.2A2 2 0 0 1 7.7 8.5h8.6a2 2 0 0 1 1.9 1.3L20 15"/><path d="M3 15h18v4H3z"/><circle cx="7.5" cy="19" r="1.6"/><circle cx="16.5" cy="19" r="1.6"/>',
+ set:'<path d="M4 7h9M19 7h1M4 17h1M11 17h9"/><circle cx="16" cy="7" r="2.5"/><circle cx="8" cy="17" r="2.5"/>'
+};
+const APPS = [
+  {n:'Navigation', s:'Maps',         p:P.nav, c:'#3b82ff,#1d4fd8', pkg:'com.google.android.apps.maps'},
+  {n:'Musique',    s:'Spotify',      p:P.mus, c:'#f0509a,#c01f6d', pkg:'com.spotify.music'},
+  {n:'Téléphone',  s:'Appeler',      p:P.tel, c:'#35d36c,#12a04a', url:'tel:'},
+  {n:'Radio',      s:'À configurer', p:P.rad, c:'#ff9a3c,#e8620c', pkg:''},
+  {n:'Véhicule',   s:'À configurer', p:P.car, c:'#8a6dff,#5a3fe0', pkg:''},
+  {n:'Réglages',   s:'Android',      p:P.set, c:'#7d8bb5,#4a5680', pkg:'com.android.settings'}
+];
+// ===========================================
+
+const $ = s => document.querySelector(s);
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.k); toast.k = setTimeout(() => t.classList.remove('on'), 3200); }
+
+async function openApp(a){
+  const target = a.url || a.pkg;
+  if (!target) { toast('Renseignez le nom de package de « ' + a.n + ' » dans index.html.'); return; }
+  const AL = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.AppLauncher;
+  try {
+    if (AL) {
+      const r = await AL.openUrl({url: target});
+      if (r && r.completed === false) toast('Application introuvable : ' + target);
+    } else if (a.url) location.href = a.url;
+    else toast('Les applications s’ouvrent uniquement depuis l’APK installé.');
+  } catch (e) { toast('Impossible d’ouvrir « ' + a.n + ' ».'); }
+}
+
+$('#grid').innerHTML = APPS.map((a, k) => {
+  const [c1, c2] = a.c.split(',');
+  return '<button class="app" data-k="' + k + '"><div class="ico" style="background:linear-gradient(150deg,' + c1 + ',' + c2 + ')"><svg viewBox="0 0 24 24" aria-hidden="true">' + a.p + '</svg></div><div><b>' + a.n + '</b><span>' + a.s + '</span></div></button>';
+}).join('');
+$('#grid').addEventListener('click', e => { const b = e.target.closest('.app'); if (b) openApp(APPS[b.dataset.k]); });
+
+function tick(){
+  const d = new Date();
+  $('#clock').textContent = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  $('#date').textContent = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+}
+tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>
