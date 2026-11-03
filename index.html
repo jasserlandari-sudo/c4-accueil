@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>C4 Accueil</title>
+<style>
+:root{--c1:#0d1b4f;--c2:#1b3fae;--gl:rgba(255,255,255,.1);--gb:rgba(255,255,255,.18);--tx:#f4f7ff;--mut:#a9b8e6}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;overflow:hidden;color:var(--tx);font-family:system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;-webkit-user-select:none;user-select:none;-webkit-tap-highlight-color:transparent}
+body{background:radial-gradient(120% 90% at 25% 15%,var(--c2),var(--c1) 70%);padding:14px}
+#app{height:100%;display:grid;grid-template-columns:1fr 1.2fr;gap:16px}
+#left{display:flex;flex-direction:column;min-height:0}
+#clock{font-size:76px;font-weight:700;line-height:1;font-variant-numeric:tabular-nums}
+#date{font-size:18px;color:var(--mut);margin-top:6px;text-transform:capitalize}
+#car{flex:1;min-height:0;display:grid;place-items:center;padding:8px 0}
+#car svg{max-height:100%;max-width:100%;height:100%;width:auto;transform:rotate(90deg) scale(.62)}
+#name{font-size:20px;font-weight:600}
+#name small{display:block;font-weight:400;font-size:14px;color:var(--mut)}
+#grid{display:grid;grid-template-columns:1fr 1fr;grid-auto-rows:1fr;gap:12px;min-height:0}
+.app{display:flex;align-items:center;gap:14px;text-align:left;padding:0 18px;color:var(--tx);background:var(--gl);border:1px solid var(--gb);border-radius:20px;font:inherit}
+.app:active{background:rgba(255,255,255,.22)}
+.app:focus-visible{outline:3px solid #fff}
+.ico{flex:none;width:64px;height:64px;border-radius:18px;display:grid;place-items:center;font-size:32px}
+.app b{display:block;font-size:20px}
+.app span{font-size:14px;color:var(--mut)}
+#toast{position:fixed;left:50%;bottom:18px;transform:translateX(-50%);background:rgba(0,0,0,.75);padding:10px 18px;border-radius:12px;font-size:15px;opacity:0;transition:opacity .2s;pointer-events:none;max-width:90%;text-align:center}
+#toast.on{opacity:1}
+@media (max-aspect-ratio:1/1){body{overflow:auto}#app{grid-template-columns:1fr;height:auto}#grid{grid-auto-rows:92px}#car{height:200px;flex:none}}
+@media (prefers-reduced-motion:reduce){#toast{transition:none}}
+</style>
+</head>
+<body>
+<div id="app">
+ <section id="left">
+  <div id="clock">--:--</div>
+  <div id="date"></div>
+  <div id="car">
+   <svg viewBox="0 0 220 420" role="img" aria-label="Citroën C4">
+    <path d="M60 60 Q110 12 160 60 L172 130 L172 330 Q172 392 110 400 Q48 392 48 330 L48 130 Z" fill="rgba(255,255,255,.1)" stroke="rgba(255,255,255,.65)" stroke-width="3"/>
+    <path d="M70 120 Q110 100 150 120 L146 160 L74 160 Z" fill="rgba(160,200,255,.3)"/>
+    <path d="M74 300 L146 300 L150 330 Q110 342 70 330 Z" fill="rgba(160,200,255,.3)"/>
+    <rect x="80" y="176" width="24" height="40" rx="8" fill="rgba(255,255,255,.3)"/><rect x="116" y="176" width="24" height="40" rx="8" fill="rgba(255,255,255,.3)"/><rect x="80" y="236" width="60" height="44" rx="8" fill="rgba(255,255,255,.3)"/>
+   </svg>
+  </div>
+  <div id="name">Citroën C4<small>Phase 1</small></div>
+ </section>
+ <section id="grid"></section>
+</div>
+<div id="toast" role="status"></div>
+
+<script>
+// ====== À MODIFIER : vos applications ======
+// pkg = nom de package Android de l’appli, url = lien (tel:, geo:, https:…)
+// Laissez pkg vide pour une tuile « À configurer ».
+const APPS = [
+  {n:'Navigation', s:'Maps',            i:'🧭', c:'#2f7bff', pkg:'com.google.android.apps.maps'},
+  {n:'Musique',    s:'Spotify',         i:'🎵', c:'#e0488f', pkg:'com.spotify.music'},
+  {n:'Téléphone',  s:'Appeler',         i:'📞', c:'#2fcf63', url:'tel:'},
+  {n:'Radio',      s:'À configurer',    i:'📻', c:'#ff8a2a', pkg:''},
+  {n:'Véhicule',   s:'À configurer',    i:'🚗', c:'#6c5cff', pkg:''},
+  {n:'Réglages',   s:'Android',         i:'⚙️', c:'#4b5a8c', pkg:'com.android.settings'}
+];
+// ===========================================
+
+const $ = s => document.querySelector(s);
+function toast(m){ const t = $('#toast'); t.textContent = m; t.classList.add('on'); clearTimeout(toast.k); toast.k = setTimeout(() => t.classList.remove('on'), 3200); }
+
+async function openApp(a){
+  const target = a.url || a.pkg;
+  if (!target) { toast('Renseignez le nom de package de « ' + a.n + ' » dans index.html.'); return; }
+  const AL = window.Capacitor && Capacitor.Plugins && Capacitor.Plugins.AppLauncher;
+  try {
+    if (AL) {
+      const r = await AL.openUrl({url: target});
+      if (r && r.completed === false) toast('Application introuvable : ' + target);
+    } else if (a.url) location.href = a.url;
+    else toast('Les applications s’ouvrent uniquement depuis l’APK installé.');
+  } catch (e) { toast('Impossible d’ouvrir « ' + a.n + ' ».'); }
+}
+
+$('#grid').innerHTML = APPS.map((a, k) =>
+  '<button class="app" data-k="' + k + '"><div class="ico" style="background:' + a.c + '">' + a.i + '</div><div><b>' + a.n + '</b><span>' + a.s + '</span></div></button>').join('');
+$('#grid').addEventListener('click', e => { const b = e.target.closest('.app'); if (b) openApp(APPS[b.dataset.k]); });
+
+function tick(){
+  const d = new Date();
+  $('#clock').textContent = d.toLocaleTimeString('fr-FR', {hour:'2-digit', minute:'2-digit'});
+  $('#date').textContent = d.toLocaleDateString('fr-FR', {weekday:'long', day:'numeric', month:'long'});
+}
+tick(); setInterval(tick, 10000);
+</script>
+</body>
+</html>
